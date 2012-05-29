@@ -21,4 +21,3 @@ class Timezone extends AbstractValidator
         return true;
     }
 }
-

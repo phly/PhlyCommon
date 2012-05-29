@@ -9,10 +9,15 @@ use PhlyCommon\Resource,
     DomainException,
     InvalidArgumentException,
     Zend\Acl\Resource as AclResource,
-    Zend\EventManager\EventCollection as Events,
-    Zend\EventManager\EventManager;
+    Zend\EventManager\EventManagerAwareInterface,
+    Zend\EventManager\EventManagerInterface as Events,
+    Zend\EventManager\EventsCapableInterface;
 
-abstract class AbstractResource implements Resource, AclResource
+abstract class AbstractResource implements 
+    AclResource,
+    EventManagerAwareInterface,
+    EventsCapableInterface,
+    Resource
 {
     protected $entityClass;
     protected $collectionClass = 'PhlyCommon\Resource\Collection';
@@ -20,21 +25,31 @@ abstract class AbstractResource implements Resource, AclResource
     protected $events;
 
     /**
+     * Set the event manager instance
+     * 
+     * @param Events $events 
+     * @return void
+     */
+    public function setEventManager(Events $events)
+    {
+        $events->setIdentifiers(array(
+            __CLASS__,
+            get_class($this),
+        ));
+        $this->events = $events;
+        return $this;
+    }
+
+    /**
      * Event manager for entity resource
      *
-     * Allows injecting an event manager, or retrieving the event manager for
+     * Allows retrieving the event manager for
      * the purpose of connecting handlers.
      * 
-     * @param  null|Events $events 
      * @return Events
      */
-    public function events(Events $events = null)
+    public function events()
     {
-        if (null !== $events) {
-            $this->events = $events;
-        } elseif (null === $this->events) {
-            $this->events = new EventManager(array(get_called_class(), __CLASS__));
-        }
         return $this->events;
     }
 

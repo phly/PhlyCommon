@@ -4,9 +4,9 @@ namespace PhlyCommon\Filter;
 
 use DateTime,
     MongoDate,
-    Zend\Filter\Filter;
+    Zend\Filter\FilterInterface;
 
-class Timestamp implements Filter
+class Timestamp implements FilterInterface
 {
     public function filter($value)
     {

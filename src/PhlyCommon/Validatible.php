@@ -1,11 +1,9 @@
 <?php
 namespace PhlyCommon;
 
-use Zend\Filter\InputFilter;
+use Zend\InputFilter\InputFilterAwareInterface;
 
-interface Validatible
+interface Validatible extends InputFilterAwareInterface
 {
-    public function setInputFilter(InputFilter $filter);
-    public function getInputFilter();
     public function isValid();
 }
