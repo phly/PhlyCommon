@@ -20,6 +20,9 @@
         "zendframework/zendframework": "dev-master"
     },
     "autoload": {
+        "psr-0": {
+            "PhlyCommon": "src/"
+        },
         "classmap": [
             "./"
         ]
