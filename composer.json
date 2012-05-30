@@ -15,16 +15,9 @@
             "homepage": "http://mwop.net/"
         }
     ],
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "http://packages.zendframework.com/"
-        }
-    ],
     "require": {
         "php": ">=5.3.3",
-        "zendframework/zend-validator": ">=2.0.0beta4",
-        "zendframework/zend-inputfilter": ">=2.0.0beta4"
+        "zendframework/zendframework": "dev-master"
     },
     "autoload": {
         "classmap": [
