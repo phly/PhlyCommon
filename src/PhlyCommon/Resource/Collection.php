@@ -1,9 +1,9 @@
 <?php
 namespace PhlyCommon\Resource;
 
-use PhlyCommon\ResourceCollection,
-    PhlyCommon\Entity,
-    Iterator;
+use PhlyCommon\ResourceCollection;
+use PhlyCommon\Entity;
+use Iterator;
 
 class Collection implements ResourceCollection
 {

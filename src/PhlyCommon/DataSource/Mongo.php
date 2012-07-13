@@ -1,11 +1,11 @@
 <?php
 namespace PhlyCommon\DataSource;
 
-use PhlyCommon\DataSource,
-    PhlyCommon\Query as QueryDefinition,
-    MongoCollection,
-    Zend\EventManager\EventCollection,
-    Zend\EventManager\EventManager;
+use PhlyCommon\DataSource;
+use PhlyCommon\Query as QueryDefinition;
+use MongoCollection;
+use Zend\EventManager\EventCollection;
+use Zend\EventManager\EventManager;
 
 class Mongo implements DataSource
 {

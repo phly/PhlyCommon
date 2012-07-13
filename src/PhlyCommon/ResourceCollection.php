@@ -1,8 +1,8 @@
 <?php
 namespace PhlyCommon;
 
-use Countable,
-    Iterator;
+use Countable;
+use Iterator;
 
 interface ResourceCollection extends Countable, Iterator, ArraySerializable
 {

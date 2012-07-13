@@ -1,9 +1,9 @@
 <?php
 namespace PhlyCommon\DataSource;
 
-use PhlyCommon\DataSource,
-    PhlyCommon\Query as QueryDefinition,
-    DomainException;
+use PhlyCommon\DataSource;
+use PhlyCommon\Query as QueryDefinition;
+use DomainException;
 
 class Mock implements DataSource
 {

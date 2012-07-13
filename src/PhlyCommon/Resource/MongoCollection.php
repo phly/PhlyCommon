@@ -1,8 +1,8 @@
 <?php
 namespace PhlyCommon\Resource;
 
-use PhlyCommon\ResourceCollection,
-    MongoCursor;
+use PhlyCommon\ResourceCollection;
+use MongoCursor;
 
 class MongoCollection implements ResourceCollection
 {

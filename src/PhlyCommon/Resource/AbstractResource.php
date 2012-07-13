@@ -1,17 +1,17 @@
 <?php
 namespace PhlyCommon\Resource;
 
-use PhlyCommon\Resource,
-    PhlyCommon\ResourceCollection,
-    PhlyCommon\DataSource,
-    PhlyCommon\DataSource\Query,
-    ArrayObject,
-    DomainException,
-    InvalidArgumentException,
-    Zend\Acl\Resource as AclResource,
-    Zend\EventManager\EventManagerAwareInterface,
-    Zend\EventManager\EventManagerInterface as Events,
-    Zend\EventManager\EventsCapableInterface;
+use PhlyCommon\Resource;
+use PhlyCommon\ResourceCollection;
+use PhlyCommon\DataSource;
+use PhlyCommon\DataSource\Query;
+use ArrayObject;
+use DomainException;
+use InvalidArgumentException;
+use Zend\Acl\Resource as AclResource;
+use Zend\EventManager\EventManagerAwareInterface;
+use Zend\EventManager\EventManagerInterface as Events;
+use Zend\EventManager\EventsCapableInterface;
 
 abstract class AbstractResource implements 
     AclResource,
@@ -319,4 +319,3 @@ abstract class AbstractResource implements
         return get_called_class();
     }
 }
-

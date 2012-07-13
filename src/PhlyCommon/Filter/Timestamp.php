@@ -2,9 +2,9 @@
 
 namespace PhlyCommon\Filter;
 
-use DateTime,
-    MongoDate,
-    Zend\Filter\FilterInterface;
+use DateTime;
+use MongoDate;
+use Zend\Filter\FilterInterface;
 
 class Timestamp implements FilterInterface
 {
