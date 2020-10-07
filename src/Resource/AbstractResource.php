@@ -9,9 +9,9 @@ use ArrayObject;
 use DomainException;
 use InvalidArgumentException;
 use Zend\Acl\Resource as AclResource;
-use Zend\EventManager\EventManagerAwareInterface;
-use Zend\EventManager\EventManagerInterface as Events;
-use Zend\EventManager\EventsCapableInterface;
+use Laminas\EventManager\EventManagerAwareInterface;
+use Laminas\EventManager\EventManagerInterface as Events;
+use Laminas\EventManager\EventsCapableInterface;
 
 abstract class AbstractResource implements 
     AclResource,

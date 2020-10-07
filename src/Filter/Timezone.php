@@ -1,7 +1,7 @@
 <?php
 namespace PhlyCommon\Filter;
 
-use Zend\Validator\AbstractValidator;
+use Laminas\Validator\AbstractValidator;
 
 class Timezone extends AbstractValidator
 {

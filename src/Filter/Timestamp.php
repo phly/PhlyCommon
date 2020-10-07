@@ -4,7 +4,7 @@ namespace PhlyCommon\Filter;
 
 use DateTime;
 use MongoDate;
-use Zend\Filter\FilterInterface;
+use Laminas\Filter\FilterInterface;
 
 class Timestamp implements FilterInterface
 {

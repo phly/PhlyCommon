@@ -4,8 +4,8 @@ namespace PhlyCommon\DataSource;
 use PhlyCommon\DataSource;
 use PhlyCommon\Query as QueryDefinition;
 use MongoCollection;
-use Zend\EventManager\EventCollection;
-use Zend\EventManager\EventManager;
+use Laminas\EventManager\EventCollection;
+use Laminas\EventManager\EventManager;
 
 class Mongo implements DataSource
 {

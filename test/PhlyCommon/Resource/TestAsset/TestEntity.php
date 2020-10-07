@@ -3,7 +3,7 @@
 namespace PhlyCommon\Resource\TestAsset;
 
 use PhlyCommon\Entity,
-    Zend\InputFilter\InputFilterInterface as InputFilter;
+    Laminas\InputFilter\InputFilterInterface as InputFilter;
 
 class TestEntity implements Entity
 {
