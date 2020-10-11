@@ -1,143 +1,153 @@
 <?php
-namespace PhlyCommon\DataSource;
 
-use PHPUnit_Framework_TestCase as TestCase;
+namespace PhlyCommonTest\DataSource;
+
+use PhlyCommon\DataSource\Mock;
+use PhlyCommon\DataSource\Query;
+use PHPUnit\Framework\TestCase;
+
+use function array_merge;
 
 class MockTest extends TestCase
 {
-    public function setUp()
+    /** @var Mock */
+    private $mock;
+
+    protected function setUp(): void
     {
         $this->mock = new Mock();
     }
 
-    public function testCanMockQueries()
+    public function testCanMockQueries(): void
     {
         $query = new Query();
         $query->where('foo', 'eq', 'bar')
-              ->orWhere('bar', 'ne', 'baz')
-              ->where('baz', '>', 1)
-              ->limit(10, 10);
-        $return = array(
-            array('id' => 1, 'foo' => 'bar', 'bar' => 'nada', 'baz' => 2),
-            array('id' => 1, 'foo' => 'bar', 'bar' => 'nothing', 'baz' => 3),
-        );
+            ->orWhere('bar', 'ne', 'baz')
+            ->where('baz', '>', 1)
+            ->limit(10, 10);
+        $return = [
+            ['id' => 1, 'foo' => 'bar', 'bar' => 'nada', 'baz' => 2],
+            ['id' => 1, 'foo' => 'bar', 'bar' => 'nothing', 'baz' => 3],
+        ];
         $this->mock->when($query, $return);
 
         $query2 = new Query();
         $query2->where('foo', 'eq', 'bar')
-               ->orWhere('bar', 'ne', 'baz')
-               ->where('baz', '>', 1)
-               ->limit(10, 10);
-        $this->assertEquals($return, $this->mock->query($query2));
+            ->orWhere('bar', 'ne', 'baz')
+            ->where('baz', '>', 1)
+            ->limit(10, 10);
+        self::assertEquals($return, $this->mock->query($query2));
     }
 
-    public function testQueryReturnsEmptyArrayWhenQueryObjectIsUnmatched()
+    public function testQueryReturnsEmptyArrayWhenQueryObjectIsUnmatched(): void
     {
         $query = new Query();
         $query->where('foo', 'eq', 'bar')
-              ->orWhere('bar', 'ne', 'baz')
-              ->where('baz', '>', 1)
-              ->limit(10, 10);
-        $return = array(
-            array('id' => 1, 'foo' => 'bar', 'bar' => 'nada', 'baz' => 2),
-            array('id' => 1, 'foo' => 'bar', 'bar' => 'nothing', 'baz' => 3),
-        );
+            ->orWhere('bar', 'ne', 'baz')
+            ->where('baz', '>', 1)
+            ->limit(10, 10);
+        $return = [
+            ['id' => 1, 'foo' => 'bar', 'bar' => 'nada', 'baz' => 2],
+            ['id' => 1, 'foo' => 'bar', 'bar' => 'nothing', 'baz' => 3],
+        ];
         $this->mock->when($query, $return);
 
         $query2 = new Query();
         $query2->where('foo', 'eq', 'bar');
-        $this->assertEquals(array(), $this->mock->query($query2));
+        self::assertEquals([], $this->mock->query($query2));
     }
 
-    public function testCreateUsesIdFromDefinitionWhenAvailable()
+    public function testCreateUsesIdFromDefinitionWhenAvailable(): void
     {
-        $definition = array(
+        $definition = [
             'id'  => 'foo',
             'bar' => 'baz',
-        );
+        ];
 
         $result = $this->mock->create($definition);
-        $this->assertSame($definition, $result);
+        self::assertSame($definition, $result);
     }
 
-    public function testCreateInsertsIdWhenNoneProvidedInDefinition()
+    public function testCreateInsertsIdWhenNoneProvidedInDefinition(): void
     {
-        $definition = array(
+        $definition = [
             'bar' => 'baz',
-        );
+        ];
 
         $result = $this->mock->create($definition);
-        $this->assertNotSame($definition, $result);
-        $this->assertArrayHasKey('id', $result);
+        self::assertNotSame($definition, $result);
+        self::assertArrayHasKey('id', $result);
     }
 
-    public function testCreateRaisesExceptionIfItemWithIdExists()
+    public function testCreateRaisesExceptionIfItemWithIdExists(): void
     {
-        $definition = array(
+        $definition = [
             'id'  => 'foo',
             'bar' => 'baz',
-        );
+        ];
 
-        $result = $this->mock->create($definition);
-        $this->setExpectedException('DomainException', 'already exists');
-        $result = $this->mock->create($definition);
-    }
-
-    public function testUpdateRaisesExceptionIfItemWithIdDoesNotExist()
-    {
-        $definition = array(
-            'id'  => 'foo',
-            'bar' => 'baz',
-        );
-
-        $this->setExpectedException('DomainException', 'does not yet exist');
-        $result = $this->mock->update($definition['id'], $definition);
-    }
-
-    public function testUpdateMergesFieldsWithExistingDefinition()
-    {
-        $definition = array(
-            'id'  => 'foo',
-            'bar' => 'baz',
-        );
         $this->mock->create($definition);
-        $fields = array(
+        $this->expectException('DomainException');
+        $this->expectExceptionMessage('already exists');
+        $this->mock->create($definition);
+    }
+
+    public function testUpdateRaisesExceptionIfItemWithIdDoesNotExist(): void
+    {
+        $definition = [
+            'id'  => 'foo',
+            'bar' => 'baz',
+        ];
+
+        $this->expectException('DomainException');
+        $this->expectExceptionMessage('does not yet exist');
+        $this->mock->update($definition['id'], $definition);
+    }
+
+    public function testUpdateMergesFieldsWithExistingDefinition(): void
+    {
+        $definition = [
+            'id'  => 'foo',
+            'bar' => 'baz',
+        ];
+        $this->mock->create($definition);
+        $fields = [
             'bar' => 'BAZBAT',
             'baz' => 'bat',
-        );
+        ];
         $result = $this->mock->update($definition['id'], $fields);
-        $this->assertEquals(array_merge($definition, $fields), $result);
+        self::assertEquals(array_merge($definition, $fields), $result);
     }
 
-    public function testGetReturnsNullIfItemWithIdDoesNotExist()
+    public function testGetReturnsNullIfItemWithIdDoesNotExist(): void
     {
-        $definition = array(
+        $definition = [
             'id'  => 'foo',
             'bar' => 'baz',
-        );
+        ];
         $this->mock->create($definition);
-        $this->assertNull($this->mock->get('bar'));
+        self::assertNull($this->mock->get('bar'));
     }
 
-    public function testGetReturnsPreviouslyStoredItemIfIdExists()
+    public function testGetReturnsPreviouslyStoredItemIfIdExists(): void
     {
-        $definition = array(
+        $definition = [
             'id'  => 'foo',
             'bar' => 'baz',
-        );
+        ];
         $this->mock->create($definition);
         $test = $this->mock->get('foo');
-        $this->assertSame($definition, $test);
+        self::assertSame($definition, $test);
     }
 
-    public function testDeleteRemovesPreviouslyStoredItems()
+    public function testDeleteRemovesPreviouslyStoredItems(): void
     {
-        $definition = array(
+        $definition = [
             'id'  => 'foo',
             'bar' => 'baz',
-        );
+        ];
         $this->mock->create($definition);
         $this->mock->delete('foo');
-        $this->assertNull($this->mock->get('foo'));
+        self::assertNull($this->mock->get('foo'));
     }
 }

@@ -1,22 +1,29 @@
 <?php
+
 namespace PhlyCommon\DataSource;
 
 use PhlyCommon\Query as Queryable;
 
+use function explode;
+use function in_array;
+use function is_array;
+use function strtolower;
+use function strtoupper;
+
 class Query implements Queryable
 {
-    protected $where  = array();
+    protected $where  = [];
     protected $limit  = false;
     protected $offset = 0;
     protected $sort   = false;
 
     /**
      * Add a where clause
-     * 
-     * @param  string $key 
-     * @param  string $comparison 
-     * @param  mixed $value 
-     * @return Query
+     *
+     * @param string     $key
+     * @param string     $comparison
+     * @param null|mixed $value
+     * @return $this
      */
     public function where($key, $comparison, $value = null)
     {
@@ -31,11 +38,11 @@ class Query implements Queryable
 
     /**
      * Add an OR'd where clause
-     * 
-     * @param  string $key 
-     * @param  string $comparison 
-     * @param  mixed $value 
-     * @return Query
+     *
+     * @param string     $key
+     * @param string     $comparison
+     * @param null|mixed $value
+     * @return $this
      */
     public function orWhere($key, $comparison, $value = null)
     {
@@ -50,10 +57,10 @@ class Query implements Queryable
 
     /**
      * Set a limit and optionally offset (for pagination)
-     * 
-     * @param  int $count 
-     * @param  int $offset 
-     * @return Query
+     *
+     * @param int $count
+     * @param int $offset
+     * @return $this
      */
     public function limit($count, $offset = 0)
     {
@@ -64,7 +71,7 @@ class Query implements Queryable
 
     /**
      * Get all where clauses, in order
-     * 
+     *
      * @return Where[]
      */
     public function getWhereClauses()
@@ -74,7 +81,7 @@ class Query implements Queryable
 
     /**
      * Get limit
-     * 
+     *
      * @return false|int
      */
     public function getLimit()
@@ -84,7 +91,7 @@ class Query implements Queryable
 
     /**
      * Get offset
-     * 
+     *
      * @return int
      */
     public function getOffset()
@@ -94,16 +101,16 @@ class Query implements Queryable
 
     /**
      * Set sort field and direction
-     * 
+     *
+     * @param string $key
+     * @param string $direction
+     * @return $this
      * @todo   Allow aggregating multiple sort statements
-     * @param  string $key 
-     * @param  string $direction 
-     * @return Query
      */
     public function sort($key, $direction = 'ASC')
     {
         $direction = strtoupper($direction);
-        if (!in_array($direction, array('ASC', 'DESC'))) {
+        if (! in_array($direction, ['ASC', 'DESC'])) {
             $direction = 'ASC';
         }
         $this->sort = $key . ' ' . $direction;
@@ -112,7 +119,7 @@ class Query implements Queryable
 
     /**
      * Get sort criteria
-     * 
+     *
      * @return string|false
      */
     public function getSort()
@@ -122,28 +129,27 @@ class Query implements Queryable
 
     /**
      * Serialize to array
-     * 
+     *
      * @return array
      */
     public function toArray()
     {
-        $where = array();
+        $where = [];
         foreach ($this->getWhereClauses() as $clause) {
             $where[] = (array) $clause;
         }
-        return array(
+        return [
             'where'  => $where,
             'limit'  => $this->getLimit(),
             'offset' => $this->getOffset(),
             'sort'   => $this->getSort(),
-        );
+        ];
     }
 
     /**
      * Populate from array
-     * 
-     * @param  array $definition 
-     * @return Query
+     *
+     * @return $this
      */
     public function fromArray(array $definition)
     {
@@ -158,15 +164,15 @@ class Query implements Queryable
                     $limit = $value;
                     break;
                 case 'sort':
-                    if (!$value) {
+                    if (! $value) {
                         $this->sort = false;
                         break;
                     }
-                    list($field, $direction) = explode(' ', $value);
+                    [$field, $direction] = explode(' ', $value);
                     $this->sort($field, $direction);
                     break;
                 case 'where':
-                    if (!is_array($value)) {
+                    if (! is_array($value)) {
                         break;
                     }
                     foreach ($value as $args) {
@@ -177,11 +183,19 @@ class Query implements Queryable
                             $args->type = $args->type ?: 'and';
                             switch (strtolower($args->type)) {
                                 case 'or':
-                                    $this->orWhere($args->key, $args->comparison, $args->value);
+                                    $this->orWhere(
+                                        $args->key,
+                                        $args->comparison,
+                                        $args->value
+                                    );
                                     break;
                                 case 'and':
                                 default:
-                                    $this->where($args->key, $args->comparison, $args->value);
+                                    $this->where(
+                                        $args->key,
+                                        $args->comparison,
+                                        $args->value
+                                    );
                                     break;
                             }
                         }

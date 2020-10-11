@@ -1,16 +1,21 @@
 <?php
+
 namespace PhlyCommon\Resource;
 
 use PhlyCommon\ResourceCollection;
-use PhlyCommon\Entity;
-use Iterator;
+
+use function count;
+use function current;
+use function key;
+use function next;
+use function reset;
 
 class Collection implements ResourceCollection
 {
     protected $count;
     protected $items;
     protected $class;
-    protected $objects = array();
+    protected $objects = [];
 
     public function __construct($items, $class)
     {
@@ -30,8 +35,8 @@ class Collection implements ResourceCollection
         if ($item === false) {
             return false;
         }
-        $key  = $this->key();
-        if (!isset($this->objects[$key])) {
+        $key = $this->key();
+        if (! isset($this->objects[$key])) {
             $object = new $this->class();
             $object->fromArray($item);
             $this->objects[$key] = $object;
@@ -51,7 +56,7 @@ class Collection implements ResourceCollection
 
     public function valid()
     {
-        return ($this->current() !== false);
+        return $this->current() !== false;
     }
 
     public function rewind()
@@ -61,12 +66,12 @@ class Collection implements ResourceCollection
 
     /**
      * Cast collection to multi-dimensional array
-     * 
+     *
      * @return array
      */
     public function toArray()
     {
-        $items = array();
+        $items = [];
         foreach ($this as $key => $value) {
             $items[$key] = $value->toArray();
         }
@@ -75,9 +80,8 @@ class Collection implements ResourceCollection
 
     /**
      * Populate from an array
-     * 
-     * @param  array $collection 
-     * @return Collection
+     *
+     * @return $this
      */
     public function fromArray(array $collection)
     {

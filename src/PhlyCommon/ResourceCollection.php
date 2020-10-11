@@ -1,4 +1,5 @@
 <?php
+
 namespace PhlyCommon;
 
 use Countable;

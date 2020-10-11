@@ -1,13 +1,14 @@
 {
     "name": "phly/phly-common",
-    "description": "A set of interfaces and generic classes used across various Phly modules.",
     "type": "library",
+    "description": "A set of interfaces and generic classes used across various Phly modules.",
     "keywords": [
+        "laminas",
         "zf2",
         "zend",
         "module"
     ],
-    "homepage": "https://github.com/weierophinney/PhlyCommon",
+    "homepage": "https://github.com/phly/PhlyCommon",
     "authors": [
         {
             "name": "Matthew Weier O'Phinney",
@@ -16,15 +17,28 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3",
-        "zendframework/zendframework": "2.*"
+        "php": "^7.3",
+        "laminas/laminas-dependency-plugin": "^1.0",
+        "laminas/laminas-eventmanager": "^3.0",
+        "laminas/laminas-filter": "^2.5",
+        "laminas/laminas-inputfilter": "^2.5",
+        "laminas/laminas-permissions-acl": "^2.5",
+        "laminas/laminas-validator": "^2.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.4"
+    },
+    "config": {
+        "sort-packages": true
     },
     "autoload": {
         "psr-0": {
             "PhlyCommon": "src/"
-        },
-        "classmap": [
-            "./"
-        ]
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhlyCommonTest\\": "test/PhlyCommon/"
+        }
     }
 }

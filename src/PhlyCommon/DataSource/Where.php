@@ -1,5 +1,11 @@
 <?php
+
 namespace PhlyCommon\DataSource;
+
+use InvalidArgumentException;
+
+use function in_array;
+use function strtoupper;
 
 class Where
 {
@@ -11,8 +17,8 @@ class Where
     public function __construct($type, $key, $comparison, $value)
     {
         $type = strtoupper($type);
-        if (!in_array($type, array('AND', 'OR'))) {
-            throw new \InvalidArgumentException('Expected "AND" or "OR" for where clause type; received "' . $type . '"');
+        if (! in_array($type, ['AND', 'OR'])) {
+            throw new InvalidArgumentException('Expected "AND" or "OR" for where clause type; received "' . $type . '"');
         }
 
         $this->type       = $type;

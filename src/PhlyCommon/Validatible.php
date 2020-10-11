@@ -1,7 +1,8 @@
 <?php
+
 namespace PhlyCommon;
 
-use Zend\InputFilter\InputFilterAwareInterface;
+use Laminas\InputFilter\InputFilterAwareInterface;
 
 interface Validatible extends InputFilterAwareInterface
 {

@@ -1,60 +1,86 @@
 <?php
+
 namespace PhlyCommon\DataSource;
 
+use DomainException;
+use InvalidArgumentException;
+use Laminas\EventManager\EventManager;
+use Laminas\EventManager\EventManagerInterface;
+use MongoCollection;
 use PhlyCommon\DataSource;
 use PhlyCommon\Query as QueryDefinition;
-use MongoCollection;
-use Zend\EventManager\EventCollection;
-use Zend\EventManager\EventManager;
+use Traversable;
+
+use function array_key_exists;
+use function compact;
+use function get_class;
+use function gettype;
+use function is_array;
+use function is_object;
+use function sprintf;
+use function strtolower;
 
 class Mongo implements DataSource
 {
     protected $events;
     protected $mongo;
-    protected $insertOptions = array(
-        'safe'  => true, 
-        'fsync' => true,
-    );
-    protected $updateOptions = array(
-        'safe'     => true, 
-        'fsync'    => true,
-        'upsert'   => false,
-        'multiple' => false,
-    );
-    protected $removeOptions = array(
-        'safe'     => true, 
-        'fsync'    => true,
-        'justOne'  => true,
-    );
+    protected $insertOptions
+        = [
+            'safe'  => true,
+            'fsync' => true,
+        ];
+    protected $updateOptions
+        = [
+            'safe'     => true,
+            'fsync'    => true,
+            'upsert'   => false,
+            'multiple' => false,
+        ];
+    protected $removeOptions
+        = [
+            'safe'    => true,
+            'fsync'   => true,
+            'justOne' => true,
+        ];
 
     public function __construct($options = null)
     {
         if ($options instanceof MongoCollection) {
             $this->setConnection($options);
-        } elseif (is_array($options) || $options instanceof \Traversable) {
+        } elseif (is_array($options) || $options instanceof Traversable) {
             $this->setOptions($options);
         }
     }
 
-    public function events(EventCollection $events = null)
+    public function events(?EventManagerInterface $events = null)
     {
         if (null !== $events) {
             $this->events = $events;
         } elseif (null === $this->events) {
-            $this->events = new EventManager(array(
-                __CLASS__, get_called_class()
-            ));
+            $this->events = new EventManager(
+                null,
+                [
+                    self::class,
+                    static::class,
+                ]
+            );
         }
         return $this->events;
     }
 
     public function setOptions($options)
     {
-        if (!is_array($options) && !$options instanceof \Traversable) {
-            throw new \InvalidArgumentException(sprintf(
-                'Expected an array or Traversable; received "%s"',
-                (is_object($options) ? get_class($options) : gettype($options))
-            ));
+        if (! is_array($options) && ! $options instanceof Traversable) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Expected an array or Traversable; received "%s"',
+                    is_object($options)
+                        ? get_class($options)
+                        : gettype(
+                            $options
+                        )
+                )
+            );
         }
 
         foreach ($options as $key => $value) {
@@ -82,15 +108,14 @@ class Mongo implements DataSource
     /**
      * Set mongo connection
      *
-     * @param  MongoCollection $connection
-     * @return Mongo
+     * @return $this
      */
     public function setConnection(MongoCollection $connection)
     {
         $this->mongo = $connection;
         return $this;
     }
-    
+
     /**
      * Get mongo connection
      *
@@ -99,7 +124,9 @@ class Mongo implements DataSource
     public function getConnection()
     {
         if (null === $this->mongo) {
-            throw new \DomainException('No MongoCollection on which to operate!');
+            throw new DomainException(
+                'No MongoCollection on which to operate!'
+            );
         }
         return $this->mongo;
     }
@@ -107,15 +134,14 @@ class Mongo implements DataSource
     /**
      * Set Mongo insert options to use on create()
      *
-     * @param  array $options
-     * @return Mongo
+     * @return $this
      */
     public function setInsertOptions(array $options)
     {
         $this->insertOptions = $options;
         return $this;
     }
-    
+
     /**
      * Get Mongo insert options
      *
@@ -129,15 +155,14 @@ class Mongo implements DataSource
     /**
      * Set Mongo update options to use on update()
      *
-     * @param  array $options
-     * @return Mongo
+     * @return $this
      */
     public function setUpdateOptions(array $options)
     {
         $this->updateOptions = $options;
         return $this;
     }
-    
+
     /**
      * Get Mongo update options
      *
@@ -151,15 +176,14 @@ class Mongo implements DataSource
     /**
      * Set Mongo remove options to use on delete()
      *
-     * @param  array $options
-     * @return Mongo
+     * @return $this
      */
     public function setRemoveOptions(array $options)
     {
         $this->removeOptions = $options;
         return $this;
     }
-    
+
     /**
      * Get Mongo remove options
      *
@@ -172,14 +196,13 @@ class Mongo implements DataSource
 
     /**
      * Query for records
-     * 
-     * @param  QueryDefinition $query 
+     *
      * @return MongoCursor
      */
     public function query(QueryDefinition $query)
     {
-        $params   = compact('query');
-        $events   = $this->events();
+        $params = compact('query');
+        $events = $this->events();
         $events->trigger(__FUNCTION__ . '.pre', $this, $params);
 
         $parser   = new Mongo\QueryParser($query);
@@ -187,7 +210,7 @@ class Mongo implements DataSource
 
         $params['criteria'] = $criteria;
         $events->trigger(__FUNCTION__ . '.criteria', $this, $params);
-        $cursor   = $this->getConnection()->find($criteria);
+        $cursor = $this->getConnection()->find($criteria);
         if (false !== ($sort = $parser->getSort())) {
             $cursor->sort($sort);
         }
@@ -204,15 +227,17 @@ class Mongo implements DataSource
 
     /**
      * Fetch a single record
-     * 
-     * @param  string|int $id 
+     *
+     * @param string|int $id
      * @return null|array
      */
     public function get($id)
     {
-        $item = $this->getConnection()->findOne(array(
-            '_id' => $id,
-        ));
+        $item = $this->getConnection()->findOne(
+            [
+                '_id' => $id,
+            ]
+        );
         if (null === $item) {
             return null;
         }
@@ -228,8 +253,7 @@ class Mongo implements DataSource
      * may be used as the document identifier.
      *
      * Returns the saved document, with "_id" changed to "id".
-     * 
-     * @param  array $definition 
+     *
      * @return array
      */
     public function create(array $definition)
@@ -252,31 +276,34 @@ class Mongo implements DataSource
 
     /**
      * Update a record
-     * 
-     * @param  string|int $id 
-     * @param  array $fields 
+     *
+     * @param string|int $id
      * @return array
      */
     public function update($id, array $fields)
     {
-        $criteria = array('_id' => $id);
-        $update   = array('$set' => $fields);
-        $this->getConnection()->update($criteria, $update, $this->getUpdateOptions());
+        $criteria = ['_id' => $id];
+        $update   = ['$set' => $fields];
+        $this->getConnection()->update(
+            $criteria,
+            $update,
+            $this->getUpdateOptions()
+        );
         if (null === $record = $this->get($id)) {
-            throw new \DomainException('Cannot update; record does not exist');
+            throw new DomainException('Cannot update; record does not exist');
         }
         return $record;
     }
 
     /**
      * Delete a record
-     * 
-     * @param  string|int $id 
+     *
+     * @param string|int $id
      * @return bool
      */
     public function delete($id)
     {
-        $criteria = array('_id' => $id);
+        $criteria = ['_id' => $id];
         $this->getConnection()->remove($criteria, $this->getRemoveOptions());
         return true;
     }

@@ -1,9 +1,9 @@
 <?php
 
-namespace PhlyCommon\Resource\TestAsset;
+namespace PhlyCommonTest\Resource\TestAsset;
 
-use PhlyCommon\Entity,
-    Zend\InputFilter\InputFilterInterface as InputFilter;
+use Laminas\InputFilter\InputFilterInterface as InputFilter;
+use PhlyCommon\Entity;
 
 class TestEntity implements Entity
 {
@@ -14,12 +14,12 @@ class TestEntity implements Entity
         $this->inputFilter = $filter;
     }
 
-    public function getInputFilter()
+    public function getInputFilter(): InputFilter
     {
         return $this->inputFilter;
     }
 
-    public function isValid()
+    public function isValid(): bool
     {
         return true;
     }
