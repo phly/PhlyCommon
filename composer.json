@@ -9,13 +9,6 @@
         "module"
     ],
     "homepage": "https://github.com/phly/PhlyCommon",
-    "authors": [
-        {
-            "name": "Matthew Weier O'Phinney",
-            "email": "matthew@weierophinney.net",
-            "homepage": "http://mwop.net/"
-        }
-    ],
     "require": {
         "php": "^7.3",
         "laminas/laminas-dependency-plugin": "^1.0",
@@ -32,13 +25,16 @@
         "sort-packages": true
     },
     "autoload": {
-        "psr-0": {
-            "PhlyCommon": "src/"
+        "psr-4": {
+            "PhlyCommon\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "PhlyCommonTest\\": "test/PhlyCommon/"
+            "PhlyCommonTest\\": "test/"
         }
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }
